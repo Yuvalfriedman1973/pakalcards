@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>פק"ל במילואים – קלפי שיחה</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #1D3B5E;
+      --navy-light: #254d7a;
+      --navy-dark: #122540;
+      --gold: #D4900C;
+      --gold-light: #e8a820;
+      --olive: #5B7348;
+      --olive-light: #6e8d58;
+      --cream: #F7F3EC;
+      --white: #FFFFFF;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Heebo', 'Arial Hebrew', Arial, sans-serif;
+      background: var(--cream);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== OPENING SCREEN ===== */
+    #opening {
+      position: fixed; inset: 0;
+      background: linear-gradient(160deg, #0a1a2e 0%, #1D3B5E 50%, #1f4370 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 100;
+      transition: opacity 0.7s ease;
+    }
+    #opening.hidden { opacity: 0; pointer-events: none; }
+
+    .geo-bg {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+    }
+    .geo {
+      position: absolute; opacity: 0.1;
+      animation: floatUp 14s ease-in-out infinite;
+    }
+    .geo:nth-child(2) { animation-delay: -4s; animation-duration: 17s; }
+    .geo:nth-child(3) { animation-delay: -7s; animation-duration: 11s; }
+    .geo:nth-child(4) { animation-delay: -10s; animation-duration: 15s; }
+    .geo:nth-child(5) { animation-delay: -2s; animation-duration: 12s; }
+    .geo:nth-child(6) { animation-delay: -5.5s; animation-duration: 18s; }
+    @keyframes floatUp {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-28px) rotate(16deg); }
+    }
+
+    .logo-wrap {
+      text-align: center; z-index: 2;
+      animation: entryAnim 0.9s ease-out 0.2s both;
+    }
+    @keyframes entryAnim {
+      from { opacity: 0; transform: translateY(36px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .logo-circle {
+      width: 160px; height: 160px;
+      border-radius: 50%; background: white;
+      padding: 14px; margin: 0 auto 22px;
+      box-shadow: 0 14px 50px rgba(0,0,0,0.38), 0 0 0 2px rgba(212,144,12,0.4);
+      overflow: hidden;
+      animation: entryAnim 0.9s ease-out 0.2s both;
+    }
+    .logo-circle img { width: 100%; height: 100%; object-fit: contain; }
+
+    .opening-title {
+      color: white; font-size: clamp(2rem, 6vw, 3.2rem);
+      font-weight: 900; margin-bottom: 6px;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.35);
+      animation: entryAnim 0.9s ease-out 0.4s both;
+    }
+    .opening-subtitle {
+      color: var(--gold-light); font-size: clamp(0.9rem, 2.3vw, 1.1rem);
+      font-weight: 400; margin-bottom: 22px; opacity: 0.95;
+      animation: entryAnim 0.9s ease-out 0.55s both;
+    }
+    .opening-divider {
+      width: 56px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold-light), transparent);
+      margin: 0 auto 20px;
+      animation: entryAnim 0.9s ease-out 0.65s both;
+    }
+    .opening-desc {
+      color: rgba(255,255,255,0.6); font-size: 0.9rem;
+      max-width: 300px; text-align: center; line-height: 1.75;
+      margin: 0 auto 32px;
+      animation: entryAnim 0.9s ease-out 0.75s both;
+    }
+    .btn-start {
+      padding: 15px 52px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      color: var(--navy); border: none; border-radius: 50px;
+      font-family: inherit; font-size: 1.15rem; font-weight: 800;
+      cursor: pointer; letter-spacing: 0.3px;
+      box-shadow: 0 8px 32px rgba(212,144,12,0.45);
+      animation: entryAnim 0.9s ease-out 0.9s both;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-start:hover { transform: translateY(-3px); box-shadow: 0 14px 42px rgba(212,144,12,0.55); }
+    .btn-start:active { transform: translateY(0); }
+    .cards-info {
+      margin-top: 16px; color: rgba(255,255,255,0.3);
+      font-size: 0.78rem; letter-spacing: 0.5px;
+      animation: entryAnim 0.9s ease-out 1.05s both;
+    }
+
+    /* ===== GAME SCREEN ===== */
+    #game {
+      min-height: 100vh; display: none; flex-direction: column;
+      align-items: center; padding: 20px 16px 40px;
+      background: linear-gradient(180deg, #EBE5DA 0%, #F7F3EC 70%);
+    }
+    #game.active { display: flex; }
+
+    .game-header {
+      width: 100%; max-width: 480px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .game-logo-mini {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: white; padding: 4px; object-fit: contain;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .game-brand { font-size: 0.95rem; font-weight: 700; color: var(--navy); }
+    .counter-pill {
+      background: var(--navy); color: white;
+      padding: 5px 14px; border-radius: 20px;
+      font-size: 0.82rem; font-weight: 600;
+    }
+
+    .progress-track {
+      width: 100%; max-width: 480px; height: 3px;
+      background: rgba(29,59,94,0.1); border-radius: 3px;
+      margin-bottom: 24px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--olive), var(--gold));
+      border-radius: 3px; transition: width 0.5s ease;
+    }
+
+    /* ===== CARD ===== */
+    .card-scene {
+      width: min(88vw, 360px);
+      height: min(116vw, 456px, calc(100vh - 300px));
+      flex-shrink: 0;
+      overflow: hidden;
+      border-radius: 22px;
+    }
+    .card-inner {
+      width: 100%; height: 100%; position: relative;
+    }
+
+    /* Card Face */
+    .card-front {
+      position: absolute; inset: 0; border-radius: 22px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 24px 64px rgba(15,30,55,0.2), 0 6px 20px rgba(0,0,0,0.08);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 24px 28px 18px;
+    }
+    @keyframes cardIn {
+      0%   { opacity: 0;   transform: translateX(105%) rotate(5deg) scale(0.9); }
+      55%  {               transform: translateX(-3%) rotate(-1deg) scale(1.02); }
+      100% { opacity: 1;   transform: translateX(0)   rotate(0deg) scale(1); }
+    }
+    @keyframes cardOut {
+      0%   { opacity: 1;   transform: translateX(0)     rotate(0deg)  scale(1); }
+      100% { opacity: 0;   transform: translateX(-105%) rotate(-6deg) scale(0.88); }
+    }
+    .card-front.anim-in  { animation: cardIn  0.48s cubic-bezier(0.22, 1, 0.36, 1) both; }
+    .card-front.anim-out { animation: cardOut 0.26s cubic-bezier(0.5,  0, 0.85, 0.3) both; }
+    .card-front::before {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 5px;
+      background: linear-gradient(90deg, var(--navy), var(--olive), var(--gold));
+    }
+    .card-question {
+      font-size: clamp(1.35rem, 4.32vw, 1.76rem); font-weight: 600;
+      color: var(--navy); line-height: 1.65; text-align: center;
+      direction: rtl; flex: 1; display: flex; align-items: center;
+    }
+    .card-label {
+      font-size: 0.7rem; color: var(--gold);
+      font-weight: 600; letter-spacing: 0.8px; margin-top: 10px;
+    }
+
+    /* Controls */
+    .controls {
+      width: 100%; max-width: 360px;
+      margin-top: 22px; display: flex; flex-direction: row; gap: 12px;
+    }
+    .btn-next {
+      flex: 1.6; padding: 15px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+      color: white; border: none; border-radius: 14px;
+      font-family: inherit; font-size: 1.05rem; font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(29,59,94,0.28);
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    }
+    .btn-next:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(29,59,94,0.4); }
+    .btn-next:active:not(:disabled) { transform: translateY(0); }
+    .btn-next:disabled { opacity: 0.32; cursor: not-allowed; }
+
+    .btn-sec {
+      flex: 1; padding: 11px;
+      background: white; color: var(--navy);
+      border: 1.5px solid rgba(29,59,94,0.14); border-radius: 12px;
+      font-family: inherit; font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-sec:hover { border-color: var(--navy); background: rgba(29,59,94,0.04); }
+
+    /* End Screen */
+    #end-screen {
+      display: none; flex-direction: column;
+      align-items: center; text-align: center; padding: 28px 20px;
+      max-width: 380px;
+    }
+    #end-screen.show { display: flex; }
+    .end-icon { font-size: 3.5rem; margin-bottom: 14px; }
+    .end-title { font-size: 1.9rem; font-weight: 900; color: var(--navy); margin-bottom: 8px; }
+    .end-text { color: #666; font-size: 0.95rem; line-height: 1.75; margin-bottom: 28px; }
+    .btn-restart {
+      padding: 15px 48px;
+      background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+      color: var(--navy); border: none; border-radius: 50px;
+      font-family: inherit; font-size: 1.05rem; font-weight: 800;
+      cursor: pointer; box-shadow: 0 8px 28px rgba(212,144,12,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-restart:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(212,144,12,0.5); }
+
+    @media (max-width: 380px) {
+      .card-question { font-size: 1.18rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== OPENING SCREEN ===== -->
+<div id="opening">
+  <div class="geo-bg">
+    <svg class="geo" style="top:7%;left:4%;width:90px" viewBox="0 0 60 60">
+      <polygon points="30,5 55,50 5,50" fill="#D4900C"/>
+    </svg>
+    <svg class="geo" style="top:18%;right:6%;width:58px" viewBox="0 0 60 60">
+      <rect x="14" y="4" width="32" height="32" transform="rotate(45 30 20)" fill="#5B7348"/>
+    </svg>
+    <svg class="geo" style="bottom:14%;left:7%;width:80px" viewBox="0 0 60 60">
+      <polygon points="30,55 5,10 55,10" fill="#D4900C"/>
+    </svg>
+    <svg class="geo" style="bottom:22%;right:4%;width:58px" viewBox="0 0 60 60">
+      <rect x="14" y="4" width="32" height="32" transform="rotate(45 30 20)" fill="#5B7348"/>
+    </svg>
+    <svg class="geo" style="top:46%;left:1%;width:44px" viewBox="0 0 60 60">
+      <polygon points="30,5 55,50 5,50" fill="#ffffff"/>
+    </svg>
+    <svg class="geo" style="top:36%;right:1%;width:38px" viewBox="0 0 60 60">
+      <polygon points="30,55 5,10 55,10" fill="#ffffff"/>
+    </svg>
+  </div>
+
+  <div class="logo-wrap">
+    <div class="opening-title">פק"ל במילואים</div>
+    <div class="opening-subtitle">מחברים אנשים &middot; יוצרים קהילה</div>
+    <div class="opening-divider"></div>
+    <div class="opening-desc">שאלות היכרות שיעזרו לכם להתחבר, להתרגש ולמצוא מכנה משותף</div>
+    <button class="btn-start" onclick="startGame()">התחל משחק &larr;</button>
+    <div class="cards-info">64 קלפי שיחה</div>
+  </div>
+</div>
+
+<!-- ===== GAME SCREEN ===== -->
+<div id="game">
+  <div class="game-header">
+    <div class="game-brand">פק"ל במילואים</div>
+    <div class="counter-pill" id="counter">1 / 64</div>
+  </div>
+
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:1.6%"></div>
+  </div>
+
+  <div class="card-scene" id="cardScene">
+    <div class="card-inner" id="cardInner">
+      <div class="card-front" id="cardFront">
+        <div class="card-question" id="cardText">שאלה</div>
+        <div class="card-label" id="cardNum">קלף 1</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn-next" id="btnNext" onclick="nextCard()" disabled>
+      הבא &larr;
+    </button>
+    <button class="btn-sec" onclick="shuffleCards()">🔀 ערבב קלפים</button>
+  </div>
+
+  <!-- End Screen -->
+  <div id="end-screen">
+    <div class="end-icon">🎉</div>
+    <div class="end-title">כל הכבוד!</div>
+    <div class="end-text">
+      עברתם על כל הקלפים.<br>
+      מקווים שנהניתם ולמדתם קצת יותר אחד על השני.
+    </div>
+    <button class="btn-restart" onclick="restartGame()">שחק שוב 🔄</button>
+  </div>
+</div>
+
+<script>
+const CARDS = [
+  "התקופה הזו תירשם בספרי ההיסטוריה. מה יסופר אודותיך ואודות הפלוגה?",
+  "לפני איזו שיחה בזמן האחרון עשית \"חזרות\" או חשבת רבות על מה שתגיד?",
+  "חושך יכול להתקיים רק בניגודיות לאור. ספר על נקודת אור אחת שאתה רואה או חווה היום.",
+  "מעודד אותי ש...",
+  "חבל לי ש...",
+  "כשאתה שומע את השיר הזה, משהו בלב שלך זז. מה השיר? ולמה הוא נוגע בך?",
+  "מראיינים אותך לתוכנית בנושא חברות. מה שלושת הדברים שהופכים אדם חבר שלך?",
+  "העלית בחכתך דג זהב, מהן 3 המשאלות שלך?",
+  "הבית שלך עולה בלהבות. יש חפץ אחד שאתה חייב להוציא משם. מהו?",
+  "בעולם נטול מגבלות ואילוצים היית בוחר לעסוק ב...",
+  "בימים קשים הדרך הטובה ביותר שאתה מוצא לנקות את הראש היא...",
+  "אתה לא ממש רגשן, אבל התרגשת ממש כש...",
+  "קיבלת אבקת קסמים שתהפוך אותך לרואה ואינו נראה ליום אחד. מה אתה הולך לעשות ביום הזה?",
+  "איזה תוכניות עצרת כשהגעת למילואים?",
+  "אומרים שבמוח הממוצע עוברות כ-60 אלף מחשבות ביום. ספר על מחשבה אחת שעברה לך היום.",
+  "הדרך הבטוחה ביותר לדעת מה יכול לעזור לחייל לעבור את התקופה הזאת בצורה טובה היא לשאול אותו. מה יכול לעזור לך?",
+  "איזה רגש מאפיין אותך היום או בימים האחרונים? (למשל: אחדות, פחד, התעלות, תקווה, געגוע, הקלה, התרגשות, כעס, מועקה, עוצמה, ייאוש, הודיה, שנאה, יופי).",
+  "אתה לא מתעצבן הרבה אבל יש דבר שממש מרגיז אותך. מהו?",
+  "ספר על שלושה אנשים שעושים אותך יותר שמח.",
+  "היו לך מלא תוכניות שעצרת עם הגעתך לכאן. כשהכל יסתיים, הדבר הראשון שתעשה, אחרי שתחבק את המשפחה שלך הוא...",
+  "ברוב יחידות המילואים ההתייצבות בצו 8 תהיה מעל 100 אחוז. מהן הסיבות שאתה עוזב את הכל ובא?",
+  "הדברים שהכי מטרידים אותנו הם אלו שאנחנו לא יכולים לטפל בהם עכשיו. במה אתה לא יכול לטפל?",
+  "נכנסת למכונת זמן. אתה יכול לנסוע לעתיד או לחזור לעבר. לאיזו שנה אתה טס ולמה?",
+  "שופינג און ליין, שופינג בחנות או לא בעניין של קניות?",
+  "שני שמות חיבה שנוהגים לכנות אותך בהם?",
+  "מקום בארץ או בעולם שהיית חוזר אליו.",
+  "על מה אתה מתלונן באופן קבוע?",
+  "אם היה לי זמן ללמוד בשביל ההנאה הייתי לוקח קורס ב...",
+  "איך נראה בוקר שבת אצלך בבית?",
+  "מעשה קונדס שעשית בילדותך.",
+  "דמות מפורסמת שהערצת בגיל ההתבגרות?",
+  "אין לך הרבה זכרונות ילדות, אבל אתה דווקא זוכר ש...",
+  "קיבלת ליום ההולדת הזמנה מחבריך ליום כיף. מה תכננו לך?",
+  "אתה אדם שומר חוק והדוח הזה היה הטיפשי ביותר שקיבלת. מהו?",
+  "זכית בהגרלת הלוטו בסכום של 10 מיליון ש\"ח. איך בכוונתך לחלק את הכסף?",
+  "קיבלת זוג כרטיסי טיסה. לאן אתה טס?",
+  "בבית שלך ממלאים עכשיו קרטון משלוח מפנק במיוחד בשבילך. מה שמים בפנים?",
+  "WOLT / AMAZON / ALIEXPRESS קיבלו אישור מיוחד להגיע אליכם. מה אתה מזמין?",
+  "המשפחה שלך רשמה אותך לתוכנית ריאלטי. איזו תוכנית זו תהיה?",
+  "הצליחו להאריך את היממה והוסיפו 3 שעות ביום. מה אתה הולך לעשות?",
+  "אתה לא זוכר הרבה ציטוטים, אבל יש ציטוט / מוטו אחד שהולך איתך. מהו?",
+  "זמר או זמרת שהערצת בגיל 15.",
+  "הגשת הצעת חוק בכנסת. מה היה הנושא שלה?",
+  "אם הייתה לך שיחה אחת עם בורא עולם, מה היית אומר לו?",
+  "איזה ערך או מרכיב בחינוך שקיבלת מהוריך חיזק אותך כאדם בוגר?",
+  "יש לך עוד חלום אחד קטן להגשים. מהו?",
+  "המציאו טכנולוגיה חדשה שמפרמטת את הזיכרונות במוח. אילו זיכרונות אתה לא רוצה למחוק?",
+  "אתה לא מרבה לשתף אבל יש אדם אחד שאתה מרגיש קרוב אליו/אליה ונוח לך לשתף. מי האדם אותו נעים לך לשתף?",
+  "לקראת רילוקיישן מארגנים לך מסיבה. איזה 3 דברים יספרו עליך?",
+  "אתה שבע רצון מחייך, אבל הזדמנות אחת שהחמצת מעלה בך מחשבות של \"אם... אז...\". מהי ההזדמנות שהחמצת?",
+  "בספר \"כישלונות מפוארים\" מתוארים כישלונות של אנשים רגילים. מוקדש עמוד לסיפור שלך. ספר על כישלון אחד שלך.",
+  "אני רגיש אבל לא מראה. הפעם האחרונה שבכיתי הייתה כש...",
+  "נבחרת לקבל צל\"ש. על מה זה היה?",
+  "מצאת כדור בדולח שיכול להראות לך פרט אחד מהעתיד שלך. מה היית רוצה לדעת על העתיד שלך?",
+  "ספר על מעשה טוב שאתה גאה בו.",
+  "מחקר על שונות מוכיח כי לכל אדם יש חוזקות ייחודיות לו. ספר על חוזקה ייחודית לך.",
+  "הרגלים עוזרים למוח ומייעלים את פעולתו. ובכל זאת, יש הרגל אחד שהיית מעדיף להיפטר ממנו. מאיזה הרגל שלך היית רוצה להיפטר?",
+  "האחיין שלך טעה ושילם על כך מחיר. כדי לנחם אותו, שיתפת בטעות שעשית ושילמת עליה. ספר על טעות שעשית.",
+  "אומץ אינו מציאות של היעדר פחד אלא פעולה לצדו. מה מפחיד אותך?",
+  "אם יכולת לחיות את חייך שוב מההתחלה, מה היית עושה אחרת?",
+  "קיבלת עוזר אישי שיסייע לך לנהל את חייך. באיזה תחום בחייך אתה צריך עזרה?",
+  "אני מתחרט שלא...",
+  "אם היה לי אומץ הייתי...",
+  "איך הסתיים סיפור האהבה הראשון שלך?"
+];
+
+let deck = [], cur = 0;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startGame() {
+  deck = shuffle(CARDS);
+  cur = 0;
+  document.getElementById('opening').classList.add('hidden');
+  document.getElementById('game').classList.add('active');
+  renderCard();
+}
+
+function renderCard(animIn = true) {
+  const front = document.getElementById('cardFront');
+  document.getElementById('cardText').textContent = deck[cur];
+  document.getElementById('cardNum').textContent = 'קלף ' + (cur + 1);
+  document.getElementById('counter').textContent = (cur + 1) + ' / ' + deck.length;
+  document.getElementById('progressFill').style.width = ((cur + 1) / deck.length * 100) + '%';
+  document.getElementById('btnNext').disabled = false;
+  document.getElementById('end-screen').classList.remove('show');
+
+  if (animIn) {
+    front.classList.remove('anim-in', 'anim-out');
+    void front.offsetWidth; // reflow
+    front.classList.add('anim-in');
+  }
+}
+
+function nextCard() {
+  const front = document.getElementById('cardFront');
+  document.getElementById('btnNext').disabled = true;
+
+  front.classList.remove('anim-in', 'anim-out');
+  void front.offsetWidth;
+  front.classList.add('anim-out');
+
+  setTimeout(() => {
+    cur++;
+    if (cur >= deck.length) {
+      showEnd();
+      return;
+    }
+    renderCard(true);
+  }, 260);
+}
+
+function showEnd() {
+  document.getElementById('cardScene').style.display = 'none';
+  document.querySelector('.controls').style.display = 'none';
+  document.getElementById('end-screen').classList.add('show');
+}
+
+function restartGame() {
+  document.getElementById('cardScene').style.display = '';
+  document.querySelector('.controls').style.display = '';
+  deck = shuffle(CARDS);
+  cur = 0;
+  renderCard();
+}
+
+function shuffleCards() {
+  deck = shuffle(deck);
+  cur = 0;
+  renderCard();
+}
+
+function backToMenu() {
+  document.getElementById('cardScene').style.display = '';
+  document.querySelector('.controls').style.display = '';
+  document.getElementById('game').classList.remove('active');
+  document.getElementById('end-screen').classList.remove('show');
+  const op = document.getElementById('opening');
+  op.classList.remove('hidden');
+  op.style.opacity = '';
+}
+</script>
+</body>
+</html>
